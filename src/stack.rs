@@ -48,7 +48,7 @@ impl Node {
 ///
 ///
 /// let simple_stack = Stack::new(1);
-/// assert!(!empty_stack.is_empty());
+/// assert!(!simple_stack.is_empty());
 /// ```
 pub struct Stack {
     head: Option<Rc<Node>>,
