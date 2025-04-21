@@ -42,7 +42,8 @@ impl Node {
 /// Examples:
 ///
 /// ```
-/// # use solanum::stack::Stack;
+/// use solanum::Stack;
+///
 /// let empty_stack = Stack::empty();
 /// assert!(empty_stack.is_empty());
 ///
