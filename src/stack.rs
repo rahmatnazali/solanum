@@ -115,3 +115,36 @@ mod node_tests {
         assert!(!node.is_empty());
     }
 }
+
+#[cfg(test)]
+mod stack_tests {
+    use super::*;
+
+    #[test]
+    fn create_stack_with_empty() {
+        let stack = Stack::empty();
+        assert!(stack.head.is_none());
+    }
+
+    #[test]
+    fn create_stack_with_new() {
+        let stack = Stack::new(1);
+        assert!(stack.head.is_some());
+
+        let first_node = stack.head.as_ref().unwrap();
+        assert_eq!(first_node.value, Some(1));
+        assert!(first_node.next.is_none());
+    }
+
+    #[test]
+    fn is_empty_with_empty_stack() {
+        let stack = Stack::empty();
+        assert!(stack.is_empty());
+    }
+
+    #[test]
+    fn is_empty_with_filled_stack() {
+        let stack = Stack::new(1);
+        assert!(!stack.is_empty());
+    }
+}
