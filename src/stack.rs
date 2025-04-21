@@ -47,7 +47,6 @@ impl Node {
 /// let empty_stack = Stack::empty();
 /// assert!(empty_stack.is_empty());
 ///
-///
 /// let simple_stack = Stack::new(1);
 /// assert!(!simple_stack.is_empty());
 /// ```
