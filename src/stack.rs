@@ -37,20 +37,44 @@ impl Node {
 }
 
 /// Implementation of a Stack
+///
+///
+/// Examples:
+///
+/// ```
+/// # use solanum::stack::Stack;
+/// let empty_stack = Stack::empty();
+/// assert!(empty_stack.is_empty());
+///
+///
+/// let simple_stack = Stack::new(1);
+/// assert!(!empty_stack.is_empty());
+/// ```
 pub struct Stack {
     head: Option<Rc<Node>>,
 }
 
 impl Stack {
-    /// Create empty stack
+    /// Create an empty stack
     pub fn empty() -> Stack {
         Self { head: None }
     }
 
-    /// Create stack with single value
-    pub fn single(value: u32) -> Stack {
+    /// Create a stack with single value
+    pub fn new(value: u32) -> Stack {
         let node = Rc::new(Node::new(value));
         Self { head: Some(node) }
+    }
+
+    /// Check if this stack is empty
+    pub fn is_empty(&self) -> bool {
+        if self.head.is_some() {
+            let first_node = Rc::clone(self.head.as_ref().unwrap());
+            if first_node.value.is_some() {
+                return false;
+            }
+        }
+        true
     }
 }
 
