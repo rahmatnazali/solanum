@@ -53,3 +53,41 @@ impl Stack {
         Self { head: Some(node) }
     }
 }
+
+#[cfg(test)]
+mod node_tests {
+    use super::*;
+
+    #[test]
+    fn initialize_node_with_empty() {
+        let node = Node::empty();
+        assert!(node.value.is_none());
+        assert!(node.next.is_none());
+    }
+
+    #[test]
+    fn initialize_node_with_new() {
+        let node = Node::new(1);
+        assert!(node.value.is_some());
+        assert!(node.next.is_none());
+        assert_eq!(node.value, Some(1));
+    }
+
+    #[test]
+    fn is_empty_with_empty_node() {
+        let node = Node {
+            value: None,
+            next: None,
+        };
+        assert!(node.is_empty());
+    }
+
+    #[test]
+    fn is_empty_with_filled_node() {
+        let node = Node {
+            value: Some(1),
+            next: None,
+        };
+        assert!(!node.is_empty());
+    }
+}
