@@ -222,6 +222,22 @@ mod node_tests {
     }
 
     #[test]
+    fn primitive_node() {
+        let _integer_node = Node::new(1);
+        let _string_node = Node::new(String::from("hello"));
+    }
+
+    #[test]
+    fn complex_node() {
+        #[allow(dead_code)]
+        struct Point {
+            x: u32,
+            y: u32,
+        }
+        let _point_node = Node::new(Point { x: 1, y: 2 });
+    }
+
+    #[test]
     fn reference_count_in_node_next() {
         let node_1 = Rc::new(Node::new(1));
         let node_2 = Rc::new(Node::new_with_next(2, Rc::clone(&node_1)));
