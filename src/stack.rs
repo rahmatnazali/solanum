@@ -119,7 +119,7 @@ mod node_tests {
 }
 
 #[cfg(test)]
-mod stack_tests {
+mod create_tests {
     use super::*;
 
     #[test]
@@ -137,6 +137,11 @@ mod stack_tests {
         assert_eq!(first_node.value, 1);
         assert!(first_node.next.is_none());
     }
+}
+
+#[cfg(test)]
+mod is_empty_tests {
+    use super::*;
 
     #[test]
     fn is_empty_with_empty_stack() {
@@ -149,6 +154,11 @@ mod stack_tests {
         let stack = Stack::new(1);
         assert!(!stack.is_empty());
     }
+}
+
+#[cfg(test)]
+mod peek_tests {
+    use super::*;
 
     #[test]
     fn peek_empty_stack() {
@@ -171,6 +181,11 @@ mod stack_tests {
         assert_eq!(stack.peek(), Some(1));
         assert_eq!(stack.head.unwrap().value, 1);
     }
+}
+
+#[cfg(test)]
+mod size_tests {
+    use super::*;
 
     #[test]
     fn size_of_empty_stack() {
@@ -200,6 +215,11 @@ mod stack_tests {
         };
         assert_eq!(stack.size(), 3);
     }
+}
+
+#[cfg(test)]
+mod list_tests {
+    use super::*;
 
     #[test]
     fn list_empty_stack() {
