@@ -1,38 +1,23 @@
 use std::rc::Rc;
 
+#[derive(Debug, PartialEq)]
 struct Node {
-    value: Option<u32>,
+    value: u32,
     next: Option<Rc<Node>>,
 }
 
 impl Node {
-    /// Create empty node
-    fn empty() -> Node {
-        Self {
-            value: None,
-            next: None,
-        }
-    }
-
-    /// Create a [Node] with a value
+    /// Create a [Node] with a value and empty next reference
     pub fn new(value: u32) -> Node {
-        Self {
-            value: Some(value),
-            next: None,
-        }
+        Self { value, next: None }
     }
 
     /// Create a [Node] with a value and its next reference
     fn new_with_next(value: u32, next_node: Rc<Node>) -> Node {
         Self {
-            value: Some(value),
+            value,
             next: Some(Rc::clone(&next_node)),
         }
-    }
-
-    /// Check if this node is empty
-    fn is_empty(&self) -> bool {
-        self.value.is_none()
     }
 }
 
@@ -68,13 +53,7 @@ impl Stack {
 
     /// Check if [Self] is empty
     pub fn is_empty(&self) -> bool {
-        if self.head.is_some() {
-            let first_node = Rc::clone(self.head.as_ref().unwrap());
-            if first_node.value.is_some() {
-                return false;
-            }
-        }
-        true
+        self.head.is_none()
     }
 }
 
@@ -83,36 +62,20 @@ mod node_tests {
     use super::*;
 
     #[test]
-    fn initialize_node_with_empty() {
-        let node = Node::empty();
-        assert!(node.value.is_none());
-        assert!(node.next.is_none());
-    }
-
-    #[test]
-    fn initialize_node_with_new() {
+    fn initialize_tail_node() {
         let node = Node::new(1);
-        assert!(node.value.is_some());
+        assert_eq!(node.value, 1);
         assert!(node.next.is_none());
-        assert_eq!(node.value, Some(1));
     }
 
     #[test]
-    fn is_empty_with_empty_node() {
-        let node = Node {
-            value: None,
-            next: None,
-        };
-        assert!(node.is_empty());
-    }
-
-    #[test]
-    fn is_empty_with_filled_node() {
-        let node = Node {
-            value: Some(1),
-            next: None,
-        };
-        assert!(!node.is_empty());
+    fn initialize_node_with_next_reference() {
+        let tail_node = Rc::new(Node::new(1));
+        let node = Node::new_with_next(2, Rc::clone(&tail_node));
+        assert_eq!(node.value, 2);
+        assert!(node.next.is_some());
+        assert_eq!(node.next.as_ref().unwrap().value, 1);
+        assert_eq!(node.next.unwrap(), tail_node);
     }
 }
 
@@ -132,7 +95,7 @@ mod stack_tests {
         assert!(stack.head.is_some());
 
         let first_node = stack.head.as_ref().unwrap();
-        assert_eq!(first_node.value, Some(1));
+        assert_eq!(first_node.value, 1);
         assert!(first_node.next.is_none());
     }
 
