@@ -46,18 +46,51 @@ pub struct Stack {
 }
 
 impl Stack {
-    /// Create an empty [Stack]
+    /// Create an empty Stack.
+    ///
+    /// ```
+    /// # use solanum::Stack;
+    /// let stack = Stack::empty();
+    ///
+    /// assert_eq!(stack.size(), 0);
+    /// ```
     pub fn empty() -> Stack {
         Self { head: None }
     }
 
-    /// Create a [Stack] with single value
+    /// Create a Stack with single value.
+    ///
+    /// ```
+    /// # use solanum::Stack;
+    /// let stack = Stack::new(100);
+    ///
+    /// assert_eq!(stack.size(), 1);
+    /// ```
     pub fn new(value: u32) -> Stack {
         let node = Rc::new(Node::new(value));
         Self { head: Some(node) }
     }
 
-    /// Push a value into the [Stack]
+    /// Return the head value without removing it from the Stack.
+    ///
+    /// ```
+    /// # use solanum::Stack;
+    /// let empty_stack = Stack::empty();
+    /// assert_eq!(empty_stack.peek(), None);
+    ///
+    /// let stack = Stack::new(1000);
+    /// assert_eq!(stack.peek(), Some(1000));
+    /// ```
+    pub fn peek(&self) -> Option<u32> {
+        if self.is_empty() {
+            None
+        } else {
+            let head_node = self.head.as_ref().unwrap();
+            Some(head_node.value)
+        }
+    }
+
+    /// Insert a value into and place it on the head of the [Stack].
     pub fn push(&mut self, value: u32) {
         if self.is_empty() {
             self.head = Some(Rc::new(Node::new(value)));
@@ -93,16 +126,6 @@ impl Stack {
     /// Check if [Self] is empty
     pub fn is_empty(&self) -> bool {
         self.head.is_none()
-    }
-
-    /// Return the head value of a [Stack] without removing it
-    pub fn peek(&self) -> Option<u32> {
-        if self.is_empty() {
-            None
-        } else {
-            let head_node = self.head.as_ref().unwrap();
-            Some(head_node.value)
-        }
     }
 
     /// Return the [Stack] size
