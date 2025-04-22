@@ -75,7 +75,7 @@ impl<T: Clone> Stack<T> {
     ///
     /// ```
     /// # use solanum::Stack;
-    /// let empty_stack = Stack::empty();
+    /// let empty_stack: Stack<u32> = Stack::empty();
     /// assert_eq!(empty_stack.size(), 0);
     ///
     /// let stack = Stack::new(100);
@@ -99,7 +99,7 @@ impl<T: Clone> Stack<T> {
     ///
     /// ```
     /// # use solanum::Stack;
-    /// let empty_stack = Stack::empty();
+    /// let empty_stack: Stack<u32> = Stack::empty();
     ///
     /// assert!(empty_stack.is_empty());
     /// ```
@@ -111,7 +111,7 @@ impl<T: Clone> Stack<T> {
     ///
     /// ```
     /// # use solanum::Stack;
-    /// let empty_stack = Stack::empty();
+    /// let empty_stack: Stack<u32> = Stack::empty();
     /// assert_eq!(empty_stack.peek(), None);
     /// assert_eq!(empty_stack.size(), 0);
     ///
@@ -132,7 +132,7 @@ impl<T: Clone> Stack<T> {
     ///
     /// ```
     /// # use solanum::Stack;
-    /// let mut stack = Stack::empty();
+    /// let mut stack: Stack<u32> = Stack::empty();
     /// assert_eq!(stack.peek(), None);
     /// assert_eq!(stack.size(), 0);
     ///
