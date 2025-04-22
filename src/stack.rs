@@ -14,7 +14,7 @@ impl Node {
         }
     }
 
-    /// Create node with a value
+    /// Create a [Node] with a value
     pub fn new(value: u32) -> Node {
         Self {
             value: Some(value),
@@ -22,7 +22,7 @@ impl Node {
         }
     }
 
-    /// Create node with a value and its next reference
+    /// Create a [Node] with a value and its next reference
     fn new_with_next(value: u32, next_node: Rc<Node>) -> Node {
         Self {
             value: Some(value),
@@ -55,18 +55,18 @@ pub struct Stack {
 }
 
 impl Stack {
-    /// Create an empty stack
+    /// Create an empty [Stack]
     pub fn empty() -> Stack {
         Self { head: None }
     }
 
-    /// Create a stack with single value
+    /// Create a [Stack] with single value
     pub fn new(value: u32) -> Stack {
         let node = Rc::new(Node::new(value));
         Self { head: Some(node) }
     }
 
-    /// Check if this stack is empty
+    /// Check if [Self] is empty
     pub fn is_empty(&self) -> bool {
         if self.head.is_some() {
             let first_node = Rc::clone(self.head.as_ref().unwrap());
