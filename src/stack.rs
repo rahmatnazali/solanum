@@ -71,15 +71,53 @@ impl Stack {
         Self { head: Some(node) }
     }
 
+    /// Return the Stack size.
+    ///
+    /// ```
+    /// # use solanum::Stack;
+    /// let empty_stack = Stack::empty();
+    /// assert_eq!(empty_stack.size(), 0);
+    ///
+    /// let stack = Stack::new(100);
+    /// assert_eq!(stack.size(), 1);
+    /// ```
+    pub fn size(&self) -> u32 {
+        if self.is_empty() {
+            0
+        } else {
+            let mut size = 0;
+            let mut node_pointer = &self.head;
+            while let Some(node) = node_pointer {
+                size += 1;
+                node_pointer = &node.next;
+            }
+            size
+        }
+    }
+
+    /// Check if Stack is empty.
+    ///
+    /// ```
+    /// # use solanum::Stack;
+    /// let empty_stack = Stack::empty();
+    ///
+    /// assert!(empty_stack.is_empty());
+    /// ```
+    pub fn is_empty(&self) -> bool {
+        self.head.is_none()
+    }
+
     /// Return the head value without removing it from the Stack.
     ///
     /// ```
     /// # use solanum::Stack;
     /// let empty_stack = Stack::empty();
     /// assert_eq!(empty_stack.peek(), None);
+    /// assert_eq!(empty_stack.size(), 0);
     ///
     /// let stack = Stack::new(1000);
     /// assert_eq!(stack.peek(), Some(1000));
+    /// assert_eq!(stack.size(), 1);
     /// ```
     pub fn peek(&self) -> Option<u32> {
         if self.is_empty() {
@@ -90,7 +128,7 @@ impl Stack {
         }
     }
 
-    /// Insert a value into and place it on the head of the [Stack].
+    /// Insert a value into and place it on the head of the Stack.
     pub fn push(&mut self, value: u32) {
         if self.is_empty() {
             self.head = Some(Rc::new(Node::new(value)));
@@ -100,8 +138,9 @@ impl Stack {
         }
     }
 
-    /// Pop the head value of the [Stack].
-    /// Returns [None] if stack is already empty.
+    /// Pop the head value of the Stack.
+    ///
+    /// Returns [Some] if value exists, or [None] if stack is already empty.
     ///
     /// ```
     /// # use solanum::Stack;
@@ -120,26 +159,6 @@ impl Stack {
                 Some(node) => self.head = Some(Rc::clone(&node)),
             }
             Some(head_node.value)
-        }
-    }
-
-    /// Check if [Self] is empty
-    pub fn is_empty(&self) -> bool {
-        self.head.is_none()
-    }
-
-    /// Return the [Stack] size
-    pub fn size(&self) -> u32 {
-        if self.is_empty() {
-            0
-        } else {
-            let mut size = 0;
-            let mut node_pointer = &self.head;
-            while let Some(node) = node_pointer {
-                size += 1;
-                node_pointer = &node.next;
-            }
-            size
         }
     }
 
