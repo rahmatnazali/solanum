@@ -1,5 +1,4 @@
-//! This module implements a [Stack] that store its head.
-//! Its node is implemented internally.
+//! Implementation of mutable Stack with `push()` and `pop()`.
 
 use std::rc::Rc;
 
