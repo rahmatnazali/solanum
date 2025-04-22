@@ -10,12 +10,12 @@ struct Node {
 }
 
 impl Node {
-    /// Create a [Node] with a value and empty next reference
+    /// Create a Node with a value and empty next reference.
     fn new(value: u32) -> Node {
         Self { value, next: None }
     }
 
-    /// Create a [Node] with a value and its next reference
+    /// Create a Node with a value and next reference.
     fn new_with_next(value: u32, next_node: Rc<Node>) -> Node {
         Self {
             value,
