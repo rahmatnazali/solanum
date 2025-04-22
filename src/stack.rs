@@ -3,19 +3,19 @@
 use std::rc::Rc;
 
 #[derive(Debug, PartialEq)]
-struct Node {
-    value: u32,
-    next: Option<Rc<Node>>,
+struct Node<T> {
+    value: T,
+    next: Option<Rc<Node<T>>>,
 }
 
-impl Node {
+impl<T> Node<T> {
     /// Create a Node with a value and empty next reference.
-    fn new(value: u32) -> Node {
+    fn new(value: T) -> Node<T> {
         Self { value, next: None }
     }
 
     /// Create a Node with a value and next reference.
-    fn new_with_next(value: u32, next_node: Rc<Node>) -> Node {
+    fn new_with_next(value: T, next_node: Rc<Node<T>>) -> Node<T> {
         Self {
             value,
             next: Some(Rc::clone(&next_node)),
@@ -41,11 +41,11 @@ impl Node {
 /// assert_eq!(stack.peek(), Some(300));
 /// assert_eq!(stack.to_list(), vec![300, 100]);
 /// ```
-pub struct Stack {
-    head: Option<Rc<Node>>,
+pub struct Stack<T> {
+    head: Option<Rc<Node<T>>>,
 }
 
-impl Stack {
+impl<T: Clone> Stack<T> {
     /// Create an empty Stack.
     ///
     /// ```
@@ -54,7 +54,7 @@ impl Stack {
     ///
     /// assert_eq!(stack.size(), 0);
     /// ```
-    pub fn empty() -> Stack {
+    pub fn empty() -> Stack<T> {
         Self { head: None }
     }
 
@@ -66,7 +66,7 @@ impl Stack {
     ///
     /// assert_eq!(stack.size(), 1);
     /// ```
-    pub fn new(value: u32) -> Stack {
+    pub fn new(value: T) -> Stack<T> {
         let node = Rc::new(Node::new(value));
         Self { head: Some(node) }
     }
@@ -119,12 +119,12 @@ impl Stack {
     /// assert_eq!(stack.peek(), Some(1000));
     /// assert_eq!(stack.size(), 1);
     /// ```
-    pub fn peek(&self) -> Option<u32> {
+    pub fn peek(&self) -> Option<T> {
         if self.is_empty() {
             None
         } else {
             let head_node = self.head.as_ref().unwrap();
-            Some(head_node.value)
+            Some(head_node.value.clone())
         }
     }
 
@@ -144,7 +144,7 @@ impl Stack {
     /// assert_eq!(stack.peek(), Some(200));
     /// assert_eq!(stack.size(), 2);
     /// ```
-    pub fn push(&mut self, value: u32) {
+    pub fn push(&mut self, value: T) {
         if self.is_empty() {
             self.head = Some(Rc::new(Node::new(value)));
         } else {
@@ -164,7 +164,7 @@ impl Stack {
     /// assert_eq!(stack.pop(), Some(100));
     /// assert_eq!(stack.pop(), None);
     /// ```
-    pub fn pop(&mut self) -> Option<u32> {
+    pub fn pop(&mut self) -> Option<T> {
         if self.is_empty() {
             None
         } else {
@@ -173,7 +173,7 @@ impl Stack {
                 None => self.head = None,
                 Some(node) => self.head = Some(Rc::clone(node)),
             }
-            Some(head_node.value)
+            Some(head_node.value.clone())
         }
     }
 
@@ -189,11 +189,11 @@ impl Stack {
     /// assert_eq!(stack.to_list(), vec![3000, 2000, 1000]);
     ///
     /// ```
-    pub fn to_list(&self) -> Vec<u32> {
-        let mut list: Vec<u32> = Vec::new();
+    pub fn to_list(&self) -> Vec<T> {
+        let mut list: Vec<T> = Vec::new();
         let mut node_pointer = &self.head;
         while let Some(node) = node_pointer {
-            list.push(node.value);
+            list.push(node.value.clone());
             node_pointer = &node.next
         }
         list
@@ -251,7 +251,7 @@ mod create_tests {
 
     #[test]
     fn create_stack_with_empty() {
-        let stack = Stack::empty();
+        let stack: Stack<u32> = Stack::empty();
         assert!(stack.head.is_none());
     }
 
@@ -272,7 +272,7 @@ mod is_empty_tests {
 
     #[test]
     fn is_empty_with_empty_stack() {
-        let stack = Stack::empty();
+        let stack: Stack<u32> = Stack::empty();
         assert!(stack.is_empty());
     }
 
@@ -289,7 +289,7 @@ mod peek_tests {
 
     #[test]
     fn peek_empty_stack() {
-        let empty_stack = Stack::empty();
+        let empty_stack: Stack<u32> = Stack::empty();
         assert_eq!(empty_stack.peek(), None);
     }
 
@@ -340,7 +340,7 @@ mod size_tests {
 
     #[test]
     fn size_of_empty_stack() {
-        let stack = Stack::empty();
+        let stack: Stack<u32> = Stack::empty();
         assert_eq!(stack.size(), 0);
     }
 
@@ -374,7 +374,7 @@ mod list_tests {
 
     #[test]
     fn list_empty_stack() {
-        let stack = Stack::empty();
+        let stack: Stack<u32> = Stack::empty();
         assert_eq!(stack.to_list(), Vec::<u32>::new());
     }
 
@@ -442,7 +442,7 @@ mod pop_tests {
 
     #[test]
     fn pop_on_empty_stack() {
-        let mut stack = Stack::empty();
+        let mut stack: Stack<u32> = Stack::empty();
         let result = stack.pop();
         assert_eq!(result, None);
         assert_eq!(stack.size(), 0);
