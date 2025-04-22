@@ -1,1 +1,1 @@
-A collection of memory-safe linear data structure written in Rust.
+A collection of memory-safe linear data structure implementation in Rust.
