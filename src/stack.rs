@@ -171,7 +171,7 @@ impl Stack {
             let head_node = self.head.take().unwrap();
             match &head_node.next {
                 None => self.head = None,
-                Some(node) => self.head = Some(Rc::clone(&node)),
+                Some(node) => self.head = Some(Rc::clone(node)),
             }
             Some(head_node.value)
         }
@@ -482,5 +482,30 @@ mod pop_tests {
 
         assert_eq!(stack.pop(), None);
         assert_eq!(stack.size(), 0);
+    }
+
+    #[test]
+    fn reference_on_pop() {
+        let node = Rc::new(Node {
+            value: 100,
+            next: None,
+        });
+        assert_eq!(Rc::strong_count(&node), 1); // node itself
+
+        {
+            let mut stack = Stack {
+                head: Some(Rc::clone(&node)),
+            };
+            assert_eq!(Rc::strong_count(&node), 2); // node itself, and referenced by stack
+
+            let pop_result = stack.pop();
+            assert_eq!(pop_result, Some(100));
+
+            // because stack.head does not reference to node anymore, the count decreased
+            assert_eq!(Rc::strong_count(&node), 1); // node itself
+        }
+        // stack is destroyed here
+
+        assert_eq!(Rc::strong_count(&node), 1); // node itself
     }
 }
