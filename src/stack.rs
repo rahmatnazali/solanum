@@ -58,6 +58,16 @@ impl Stack {
     pub fn is_empty(&self) -> bool {
         self.head.is_none()
     }
+
+    /// Return the head value of a [Stack]
+    pub fn peek(&self) -> Option<u32> {
+        if self.is_empty() {
+            None
+        } else {
+            let head_node = self.head.as_ref().unwrap();
+            Some(head_node.value)
+        }
+    }
 }
 
 #[cfg(test)]
@@ -112,5 +122,27 @@ mod stack_tests {
     fn is_empty_with_filled_stack() {
         let stack = Stack::new(1);
         assert!(!stack.is_empty());
+    }
+
+    #[test]
+    fn peek_empty_stack() {
+        let empty_stack = Stack::empty();
+        assert_eq!(empty_stack.peek(), None);
+    }
+
+    #[test]
+    fn peek_filled_stack() {
+        let stack = Stack::new(1);
+        assert_eq!(stack.peek(), Some(1));
+        assert_eq!(stack.head.unwrap().value, 1);
+    }
+
+    #[test]
+    fn peek_filled_stack_multiple_times() {
+        let stack = Stack::new(1);
+        assert_eq!(stack.peek(), Some(1));
+        assert_eq!(stack.peek(), Some(1));
+        assert_eq!(stack.peek(), Some(1));
+        assert_eq!(stack.head.unwrap().value, 1);
     }
 }
