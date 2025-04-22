@@ -39,7 +39,7 @@ impl Node {
 ///
 /// assert_eq!(stack.size(), 3);
 /// assert_eq!(stack.peek(), Some(3000));
-/// assert_eq!(stack.list(), vec![3000, 200, 1]);
+/// assert_eq!(stack.to_list(), vec![3000, 200, 1]);
 /// ```
 pub struct Stack {
     head: Option<Rc<Node>>,
@@ -162,8 +162,19 @@ impl Stack {
         }
     }
 
-    /// Traverse the [Stack] and return all values as Vector
-    pub fn list(&self) -> Vec<u32> {
+    /// Traverse the Stack and return all values as [Vec], starting from the head.
+    ///
+    /// ```
+    /// # use solanum::Stack;
+    /// let mut stack = Stack::empty();
+    /// stack.push(1000);
+    /// stack.push(2000);
+    /// stack.push(3000);
+    ///
+    /// assert_eq!(stack.to_list(), vec![3000, 2000, 1000]);
+    ///
+    /// ```
+    pub fn to_list(&self) -> Vec<u32> {
         let mut list: Vec<u32> = Vec::new();
         let mut node_pointer = &self.head;
         while let Some(node) = node_pointer {
@@ -302,7 +313,7 @@ mod list_tests {
     #[test]
     fn list_empty_stack() {
         let stack = Stack::empty();
-        assert_eq!(stack.list(), Vec::<u32>::new());
+        assert_eq!(stack.to_list(), Vec::<u32>::new());
     }
 
     #[test]
@@ -319,7 +330,7 @@ mod list_tests {
                 })),
             })),
         };
-        assert_eq!(stack.list(), vec![1, 2, 3]);
+        assert_eq!(stack.to_list(), vec![1, 2, 3]);
     }
 }
 
@@ -332,7 +343,7 @@ mod push_tests {
         let mut stack = Stack::empty();
         stack.push(1);
         assert_eq!(stack.size(), 1);
-        assert_eq!(stack.list(), vec![1]);
+        assert_eq!(stack.to_list(), vec![1]);
     }
 
     #[test]
@@ -340,26 +351,26 @@ mod push_tests {
         let mut stack = Stack::new(1);
         stack.push(2);
         assert_eq!(stack.size(), 2);
-        assert_eq!(stack.list(), vec![2, 1]);
+        assert_eq!(stack.to_list(), vec![2, 1]);
     }
 
     #[test]
     fn push_many_times() {
         let mut stack = Stack::empty();
         assert_eq!(stack.size(), 0);
-        assert_eq!(stack.list(), vec![]);
+        assert_eq!(stack.to_list(), vec![]);
 
         stack.push(1);
         assert_eq!(stack.size(), 1);
-        assert_eq!(stack.list(), vec![1]);
+        assert_eq!(stack.to_list(), vec![1]);
 
         stack.push(2);
         assert_eq!(stack.size(), 2);
-        assert_eq!(stack.list(), vec![2, 1]);
+        assert_eq!(stack.to_list(), vec![2, 1]);
 
         stack.push(3);
         assert_eq!(stack.size(), 3);
-        assert_eq!(stack.list(), vec![3, 2, 1]);
+        assert_eq!(stack.to_list(), vec![3, 2, 1]);
     }
 }
 
