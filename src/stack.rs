@@ -11,7 +11,7 @@ struct Node {
 
 impl Node {
     /// Create a [Node] with a value and empty next reference
-    pub fn new(value: u32) -> Node {
+    fn new(value: u32) -> Node {
         Self { value, next: None }
     }
 
