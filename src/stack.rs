@@ -32,11 +32,14 @@ impl Node {
 /// ```
 /// use solanum::Stack;
 ///
-/// let empty_stack = Stack::empty();
-/// assert!(empty_stack.is_empty());
+/// let mut stack = Stack::empty();
+/// stack.push(1);
+/// stack.push(200);
+/// stack.push(3000);
 ///
-/// let simple_stack = Stack::new(1);
-/// assert!(!simple_stack.is_empty());
+/// assert_eq!(stack.size(), 3);
+/// assert_eq!(stack.peek(), Some(3000));
+/// assert_eq!(stack.list(), vec![3000, 200, 1]);
 /// ```
 pub struct Stack {
     head: Option<Rc<Node>>,
