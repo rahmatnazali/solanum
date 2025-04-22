@@ -50,7 +50,7 @@ impl<T: Clone> Stack<T> {
     ///
     /// ```
     /// # use solanum::Stack;
-    /// let stack = Stack::empty();
+    /// let stack: Stack<u32> = Stack::empty();
     ///
     /// assert_eq!(stack.size(), 0);
     /// ```
