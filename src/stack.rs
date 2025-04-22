@@ -69,6 +69,21 @@ impl Stack {
         }
     }
 
+    /// Return the [Stack] size
+    pub fn size(&self) -> u32 {
+        if self.is_empty() {
+            0
+        } else {
+            let mut size = 0;
+            let mut node_pointer = &self.head;
+            while let Some(node) = node_pointer {
+                size += 1;
+                node_pointer = &node.next;
+            }
+            size
+        }
+    }
+
     /// Traverse the [Stack] and return all values as Vector
     pub fn list(&self) -> Vec<u32> {
         let mut list: Vec<u32> = Vec::new();
@@ -155,6 +170,35 @@ mod stack_tests {
         assert_eq!(stack.peek(), Some(1));
         assert_eq!(stack.peek(), Some(1));
         assert_eq!(stack.head.unwrap().value, 1);
+    }
+
+    #[test]
+    fn size_of_empty_stack() {
+        let stack = Stack::empty();
+        assert_eq!(stack.size(), 0);
+    }
+
+    #[test]
+    fn size_of_single_stack() {
+        let stack = Stack::new(100);
+        assert_eq!(stack.size(), 1);
+    }
+
+    #[test]
+    fn size_of_filled_stack() {
+        let stack = Stack {
+            head: Some(Rc::new(Node {
+                value: 100,
+                next: Some(Rc::new(Node {
+                    value: 200,
+                    next: Some(Rc::new(Node {
+                        value: 300,
+                        next: None,
+                    })),
+                })),
+            })),
+        };
+        assert_eq!(stack.size(), 3);
     }
 
     #[test]
