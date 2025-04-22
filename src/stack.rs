@@ -67,6 +67,29 @@ impl Stack {
         }
     }
 
+    /// Pop the head value of the [Stack].
+    /// Returns [None] if stack is already empty.
+    ///
+    /// ```
+    /// # use solanum::Stack;
+    /// let mut stack = Stack::new(100);
+    ///
+    /// assert_eq!(stack.pop(), Some(100));
+    /// assert_eq!(stack.pop(), None);
+    /// ```
+    pub fn pop(&mut self) -> Option<u32> {
+        if self.is_empty() {
+            None
+        } else {
+            let head_node = self.head.take().unwrap();
+            match &head_node.next {
+                None => self.head = None,
+                Some(node) => self.head = Some(Rc::clone(&node)),
+            }
+            Some(head_node.value)
+        }
+    }
+
     /// Check if [Self] is empty
     pub fn is_empty(&self) -> bool {
         self.head.is_none()
@@ -295,5 +318,54 @@ mod push_tests {
         stack.push(3);
         assert_eq!(stack.size(), 3);
         assert_eq!(stack.list(), vec![3, 2, 1]);
+    }
+}
+
+#[cfg(test)]
+mod pop_tests {
+    use super::*;
+
+    #[test]
+    fn pop_on_empty_stack() {
+        let mut stack = Stack::empty();
+        let result = stack.pop();
+        assert_eq!(result, None);
+        assert_eq!(stack.size(), 0);
+    }
+
+    #[test]
+    fn pop_on_stack_with_one_element() {
+        let mut stack = Stack::new(1);
+        let result = stack.pop();
+        assert_eq!(result, Some(1));
+        assert_eq!(stack.size(), 0);
+    }
+
+    #[test]
+    fn pop_on_stack_with_several_element() {
+        let mut stack = Stack::empty();
+        stack.push(100);
+        stack.push(200);
+        stack.push(300);
+
+        assert_eq!(stack.size(), 3);
+
+        assert_eq!(stack.pop(), Some(300));
+        assert_eq!(stack.size(), 2);
+
+        assert_eq!(stack.pop(), Some(200));
+        assert_eq!(stack.size(), 1);
+
+        assert_eq!(stack.pop(), Some(100));
+        assert_eq!(stack.size(), 0);
+
+        assert_eq!(stack.pop(), None);
+        assert_eq!(stack.size(), 0);
+
+        assert_eq!(stack.pop(), None);
+        assert_eq!(stack.size(), 0);
+
+        assert_eq!(stack.pop(), None);
+        assert_eq!(stack.size(), 0);
     }
 }
