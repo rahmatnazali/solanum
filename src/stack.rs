@@ -1,3 +1,6 @@
+//! This module implements a [Stack] that store its head.
+//! Its node is implemented internally.
+
 use std::rc::Rc;
 
 #[derive(Debug, PartialEq)]
