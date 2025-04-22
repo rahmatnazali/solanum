@@ -54,6 +54,16 @@ impl Stack {
         Self { head: Some(node) }
     }
 
+    /// Push a value into the [Stack]
+    pub fn push(&mut self, value: u32) {
+        if self.is_empty() {
+            self.head = Some(Rc::new(Node::new(value)));
+        } else {
+            let head_node = self.head.take().unwrap();
+            self.head = Some(Rc::new(Node::new_with_next(value, head_node)));
+        }
+    }
+
     /// Check if [Self] is empty
     pub fn is_empty(&self) -> bool {
         self.head.is_none()
@@ -242,5 +252,45 @@ mod list_tests {
             })),
         };
         assert_eq!(stack.list(), vec![1, 2, 3]);
+    }
+}
+
+#[cfg(test)]
+mod push_tests {
+    use super::*;
+
+    #[test]
+    fn push_once_to_empty_stack() {
+        let mut stack = Stack::empty();
+        stack.push(1);
+        assert_eq!(stack.size(), 1);
+        assert_eq!(stack.list(), vec![1]);
+    }
+
+    #[test]
+    fn push_once_to_filled_stack() {
+        let mut stack = Stack::new(1);
+        stack.push(2);
+        assert_eq!(stack.size(), 2);
+        assert_eq!(stack.list(), vec![2, 1]);
+    }
+
+    #[test]
+    fn push_many_times() {
+        let mut stack = Stack::empty();
+        assert_eq!(stack.size(), 0);
+        assert_eq!(stack.list(), vec![]);
+
+        stack.push(1);
+        assert_eq!(stack.size(), 1);
+        assert_eq!(stack.list(), vec![1]);
+
+        stack.push(2);
+        assert_eq!(stack.size(), 2);
+        assert_eq!(stack.list(), vec![2, 1]);
+
+        stack.push(3);
+        assert_eq!(stack.size(), 3);
+        assert_eq!(stack.list(), vec![3, 2, 1]);
     }
 }
