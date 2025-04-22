@@ -129,6 +129,21 @@ impl Stack {
     }
 
     /// Insert a value into and place it on the head of the Stack.
+    ///
+    /// ```
+    /// # use solanum::Stack;
+    /// let mut stack = Stack::empty();
+    /// assert_eq!(stack.peek(), None);
+    /// assert_eq!(stack.size(), 0);
+    ///
+    /// stack.push(100);
+    /// assert_eq!(stack.peek(), Some(100));
+    /// assert_eq!(stack.size(), 1);
+    ///
+    /// stack.push(200);
+    /// assert_eq!(stack.peek(), Some(200));
+    /// assert_eq!(stack.size(), 2);
+    /// ```
     pub fn push(&mut self, value: u32) {
         if self.is_empty() {
             self.head = Some(Rc::new(Node::new(value)));
