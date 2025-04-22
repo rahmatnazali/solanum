@@ -223,8 +223,17 @@ mod node_tests {
 
     #[test]
     fn primitive_node() {
-        let _integer_node = Node::new(1);
-        let _string_node = Node::new(String::from("hello"));
+        let integer_node = Node::new(1);
+        assert_eq!(integer_node.value, 1);
+
+        let float_node = Node::new(0.1);
+        assert_eq!(float_node.value, 0.1);
+
+        let boolean_node = Node::new(true);
+        assert!(boolean_node.value);
+
+        let str_node = Node::new("hello");
+        assert_eq!(str_node.value, "hello");
     }
 
     #[test]
