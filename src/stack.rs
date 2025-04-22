@@ -289,6 +289,30 @@ mod create_tests {
         assert_eq!(first_node.value, 1);
         assert!(first_node.next.is_none());
     }
+
+    #[test]
+    fn primitive_stack() {
+        let integer_stack = Stack::new(1);
+        assert_eq!(integer_stack.peek(), Some(1));
+
+        let boolean_stack = Stack::new(false);
+        assert_eq!(boolean_stack.peek(), Some(false));
+
+        let str_stack = Stack::new("asd");
+        assert_eq!(str_stack.peek(), Some("asd"));
+    }
+
+    #[test]
+    fn complex_stack() {
+        #[allow(dead_code)]
+        #[derive(Clone, PartialEq, Debug)]
+        struct Point {
+            x: u32,
+            y: u32,
+        }
+        let point_stack = Stack::new(Point { x: 1, y: 2 });
+        assert_eq!(point_stack.peek(), Some(Point { x: 1, y: 2 }));
+    }
 }
 
 #[cfg(test)]
