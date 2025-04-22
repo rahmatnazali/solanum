@@ -220,6 +220,29 @@ mod node_tests {
         assert_eq!(node.next.as_ref().unwrap().value, 1);
         assert_eq!(node.next.unwrap(), tail_node);
     }
+
+    #[test]
+    fn reference_count_in_node_next() {
+        let node_1 = Rc::new(Node::new(1));
+        let node_2 = Rc::new(Node::new_with_next(2, Rc::clone(&node_1)));
+
+        assert_eq!(Rc::strong_count(&node_1), 2); // node_1 & being referenced by node_2.next
+        assert_eq!(Rc::strong_count(&node_2), 1); // node_2
+    }
+
+    #[test]
+    fn reference_count_is_reduced_after_unlink() {
+        let node_1 = Rc::new(Node::new(1));
+        assert_eq!(Rc::strong_count(&node_1), 1); // node_1 itself
+
+        {
+            let _node_2 = Rc::new(Node::new_with_next(2, Rc::clone(&node_1)));
+            assert_eq!(Rc::strong_count(&node_1), 2); // node_1 & being referenced by node_2.next
+        }
+        // here, node_2 is dropped
+
+        assert_eq!(Rc::strong_count(&node_1), 1); // node_1 only, as node_2 has been dropped
+    }
 }
 
 #[cfg(test)]
