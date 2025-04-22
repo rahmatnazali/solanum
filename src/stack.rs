@@ -59,7 +59,7 @@ impl Stack {
         self.head.is_none()
     }
 
-    /// Return the head value of a [Stack]
+    /// Return the head value of a [Stack] without removing it
     pub fn peek(&self) -> Option<u32> {
         if self.is_empty() {
             None
@@ -67,6 +67,17 @@ impl Stack {
             let head_node = self.head.as_ref().unwrap();
             Some(head_node.value)
         }
+    }
+
+    /// Traverse the [Stack] and return all values as Vector
+    pub fn list(&self) -> Vec<u32> {
+        let mut list: Vec<u32> = Vec::new();
+        let mut node_pointer = &self.head;
+        while let Some(node) = node_pointer {
+            list.push(node.value);
+            node_pointer = &node.next
+        }
+        list
     }
 }
 
@@ -144,5 +155,28 @@ mod stack_tests {
         assert_eq!(stack.peek(), Some(1));
         assert_eq!(stack.peek(), Some(1));
         assert_eq!(stack.head.unwrap().value, 1);
+    }
+
+    #[test]
+    fn list_empty_stack() {
+        let stack = Stack::empty();
+        assert_eq!(stack.list(), Vec::<u32>::new());
+    }
+
+    #[test]
+    fn list_filled_stack() {
+        let stack = Stack {
+            head: Some(Rc::new(Node {
+                value: 1,
+                next: Some(Rc::new(Node {
+                    value: 2,
+                    next: Some(Rc::new(Node {
+                        value: 3,
+                        next: None,
+                    })),
+                })),
+            })),
+        };
+        assert_eq!(stack.list(), vec![1, 2, 3]);
     }
 }
