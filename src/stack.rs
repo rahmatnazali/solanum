@@ -308,6 +308,30 @@ mod peek_tests {
         assert_eq!(stack.peek(), Some(1));
         assert_eq!(stack.head.unwrap().value, 1);
     }
+
+    #[test]
+    fn reference_on_peek_is_unchanged() {
+        let node = Rc::new(Node {
+            value: 100,
+            next: None,
+        });
+        assert_eq!(Rc::strong_count(&node), 1); // node itself
+
+        {
+            let stack = Stack {
+                head: Some(Rc::clone(&node)),
+            };
+            assert_eq!(Rc::strong_count(&node), 2); // node itself, and referenced by stack
+
+            let peek_result = stack.peek();
+            assert_eq!(peek_result, Some(100));
+
+            assert_eq!(Rc::strong_count(&node), 2); // peek should not modify strong count
+        }
+        // stack is destroyed here
+
+        assert_eq!(Rc::strong_count(&node), 1); // node itself
+    }
 }
 
 #[cfg(test)]
