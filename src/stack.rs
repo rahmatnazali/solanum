@@ -3,19 +3,19 @@
 use std::rc::Rc;
 
 #[derive(Debug, PartialEq)]
-struct Node {
-    value: u32,
-    next: Option<Rc<Node>>,
+struct Node<T> {
+    value: T,
+    next: Option<Rc<Node<T>>>,
 }
 
-impl Node {
+impl<T> Node<T> {
     /// Create a Node with a value and empty next reference.
-    fn new(value: u32) -> Node {
+    fn new(value: T) -> Node<T> {
         Self { value, next: None }
     }
 
     /// Create a Node with a value and next reference.
-    fn new_with_next(value: u32, next_node: Rc<Node>) -> Node {
+    fn new_with_next(value: T, next_node: Rc<Node<T>>) -> Node<T> {
         Self {
             value,
             next: Some(Rc::clone(&next_node)),
@@ -41,20 +41,20 @@ impl Node {
 /// assert_eq!(stack.peek(), Some(300));
 /// assert_eq!(stack.to_list(), vec![300, 100]);
 /// ```
-pub struct Stack {
-    head: Option<Rc<Node>>,
+pub struct Stack<T> {
+    head: Option<Rc<Node<T>>>,
 }
 
-impl Stack {
+impl<T: Clone> Stack<T> {
     /// Create an empty Stack.
     ///
     /// ```
     /// # use solanum::Stack;
-    /// let stack = Stack::empty();
+    /// let stack: Stack<u32> = Stack::empty();
     ///
     /// assert_eq!(stack.size(), 0);
     /// ```
-    pub fn empty() -> Stack {
+    pub fn empty() -> Stack<T> {
         Self { head: None }
     }
 
@@ -66,7 +66,7 @@ impl Stack {
     ///
     /// assert_eq!(stack.size(), 1);
     /// ```
-    pub fn new(value: u32) -> Stack {
+    pub fn new(value: T) -> Stack<T> {
         let node = Rc::new(Node::new(value));
         Self { head: Some(node) }
     }
@@ -75,7 +75,7 @@ impl Stack {
     ///
     /// ```
     /// # use solanum::Stack;
-    /// let empty_stack = Stack::empty();
+    /// let empty_stack: Stack<u32> = Stack::empty();
     /// assert_eq!(empty_stack.size(), 0);
     ///
     /// let stack = Stack::new(100);
@@ -99,7 +99,7 @@ impl Stack {
     ///
     /// ```
     /// # use solanum::Stack;
-    /// let empty_stack = Stack::empty();
+    /// let empty_stack: Stack<u32> = Stack::empty();
     ///
     /// assert!(empty_stack.is_empty());
     /// ```
@@ -111,7 +111,7 @@ impl Stack {
     ///
     /// ```
     /// # use solanum::Stack;
-    /// let empty_stack = Stack::empty();
+    /// let empty_stack: Stack<u32> = Stack::empty();
     /// assert_eq!(empty_stack.peek(), None);
     /// assert_eq!(empty_stack.size(), 0);
     ///
@@ -119,12 +119,12 @@ impl Stack {
     /// assert_eq!(stack.peek(), Some(1000));
     /// assert_eq!(stack.size(), 1);
     /// ```
-    pub fn peek(&self) -> Option<u32> {
+    pub fn peek(&self) -> Option<T> {
         if self.is_empty() {
             None
         } else {
             let head_node = self.head.as_ref().unwrap();
-            Some(head_node.value)
+            Some(head_node.value.clone())
         }
     }
 
@@ -132,7 +132,7 @@ impl Stack {
     ///
     /// ```
     /// # use solanum::Stack;
-    /// let mut stack = Stack::empty();
+    /// let mut stack: Stack<u32> = Stack::empty();
     /// assert_eq!(stack.peek(), None);
     /// assert_eq!(stack.size(), 0);
     ///
@@ -144,7 +144,7 @@ impl Stack {
     /// assert_eq!(stack.peek(), Some(200));
     /// assert_eq!(stack.size(), 2);
     /// ```
-    pub fn push(&mut self, value: u32) {
+    pub fn push(&mut self, value: T) {
         if self.is_empty() {
             self.head = Some(Rc::new(Node::new(value)));
         } else {
@@ -164,7 +164,7 @@ impl Stack {
     /// assert_eq!(stack.pop(), Some(100));
     /// assert_eq!(stack.pop(), None);
     /// ```
-    pub fn pop(&mut self) -> Option<u32> {
+    pub fn pop(&mut self) -> Option<T> {
         if self.is_empty() {
             None
         } else {
@@ -173,7 +173,7 @@ impl Stack {
                 None => self.head = None,
                 Some(node) => self.head = Some(Rc::clone(node)),
             }
-            Some(head_node.value)
+            Some(head_node.value.clone())
         }
     }
 
@@ -189,11 +189,11 @@ impl Stack {
     /// assert_eq!(stack.to_list(), vec![3000, 2000, 1000]);
     ///
     /// ```
-    pub fn to_list(&self) -> Vec<u32> {
-        let mut list: Vec<u32> = Vec::new();
+    pub fn to_list(&self) -> Vec<T> {
+        let mut list: Vec<T> = Vec::new();
         let mut node_pointer = &self.head;
         while let Some(node) = node_pointer {
-            list.push(node.value);
+            list.push(node.value.clone());
             node_pointer = &node.next
         }
         list
@@ -219,6 +219,31 @@ mod node_tests {
         assert!(node.next.is_some());
         assert_eq!(node.next.as_ref().unwrap().value, 1);
         assert_eq!(node.next.unwrap(), tail_node);
+    }
+
+    #[test]
+    fn primitive_node() {
+        let integer_node = Node::new(1);
+        assert_eq!(integer_node.value, 1);
+
+        let float_node = Node::new(0.1);
+        assert_eq!(float_node.value, 0.1);
+
+        let boolean_node = Node::new(true);
+        assert!(boolean_node.value);
+
+        let str_node = Node::new("hello");
+        assert_eq!(str_node.value, "hello");
+    }
+
+    #[test]
+    fn complex_node() {
+        #[allow(dead_code)]
+        struct Point {
+            x: u32,
+            y: u32,
+        }
+        let _point_node = Node::new(Point { x: 1, y: 2 });
     }
 
     #[test]
@@ -251,7 +276,7 @@ mod create_tests {
 
     #[test]
     fn create_stack_with_empty() {
-        let stack = Stack::empty();
+        let stack: Stack<u32> = Stack::empty();
         assert!(stack.head.is_none());
     }
 
@@ -264,6 +289,30 @@ mod create_tests {
         assert_eq!(first_node.value, 1);
         assert!(first_node.next.is_none());
     }
+
+    #[test]
+    fn primitive_stack() {
+        let integer_stack = Stack::new(1);
+        assert_eq!(integer_stack.peek(), Some(1));
+
+        let boolean_stack = Stack::new(false);
+        assert_eq!(boolean_stack.peek(), Some(false));
+
+        let str_stack = Stack::new("asd");
+        assert_eq!(str_stack.peek(), Some("asd"));
+    }
+
+    #[test]
+    fn complex_stack() {
+        #[allow(dead_code)]
+        #[derive(Clone, PartialEq, Debug)]
+        struct Point {
+            x: u32,
+            y: u32,
+        }
+        let point_stack = Stack::new(Point { x: 1, y: 2 });
+        assert_eq!(point_stack.peek(), Some(Point { x: 1, y: 2 }));
+    }
 }
 
 #[cfg(test)]
@@ -272,7 +321,7 @@ mod is_empty_tests {
 
     #[test]
     fn is_empty_with_empty_stack() {
-        let stack = Stack::empty();
+        let stack: Stack<u32> = Stack::empty();
         assert!(stack.is_empty());
     }
 
@@ -289,7 +338,7 @@ mod peek_tests {
 
     #[test]
     fn peek_empty_stack() {
-        let empty_stack = Stack::empty();
+        let empty_stack: Stack<u32> = Stack::empty();
         assert_eq!(empty_stack.peek(), None);
     }
 
@@ -340,7 +389,7 @@ mod size_tests {
 
     #[test]
     fn size_of_empty_stack() {
-        let stack = Stack::empty();
+        let stack: Stack<u32> = Stack::empty();
         assert_eq!(stack.size(), 0);
     }
 
@@ -374,7 +423,7 @@ mod list_tests {
 
     #[test]
     fn list_empty_stack() {
-        let stack = Stack::empty();
+        let stack: Stack<u32> = Stack::empty();
         assert_eq!(stack.to_list(), Vec::<u32>::new());
     }
 
@@ -442,7 +491,7 @@ mod pop_tests {
 
     #[test]
     fn pop_on_empty_stack() {
-        let mut stack = Stack::empty();
+        let mut stack: Stack<u32> = Stack::empty();
         let result = stack.pop();
         assert_eq!(result, None);
         assert_eq!(stack.size(), 0);
