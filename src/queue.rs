@@ -91,14 +91,16 @@ mod node_tests {
         let tail_node = Rc::new(RefCell::new(Some(Node::new(1))));
         let head_node = Rc::new(RefCell::new(Some(Node::new_with_next(2, tail_node))));
 
-        let mut head_node_ref = head_node.borrow_mut();
-        assert!(head_node_ref.as_ref().is_some());
+        let head_node_ref = head_node.borrow_mut();
+        let mut head_node_next_ref = head_node_ref.as_ref().unwrap().next.borrow_mut();
+        assert!(head_node_next_ref.as_ref().is_some());
+        assert_eq!(head_node_next_ref.as_ref().unwrap().value, 1);
 
         // set head_node.next as None
-        head_node_ref.take();
+        head_node_next_ref.take();
 
         // head_node.next is now None
-        assert!(head_node_ref.as_ref().is_none());
+        assert!(head_node_next_ref.as_ref().is_none());
     }
 
     #[test]
