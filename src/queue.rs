@@ -5,31 +5,31 @@ use std::rc::Rc;
 
 #[derive(Debug, PartialEq)]
 struct Node {
-    value: u32,
-    next: Rc<RefCell<Option<Node>>>,
+    value: Option<u32>,
+    next: Option<Rc<RefCell<Node>>>,
 }
 
 impl Node {
     /// Create a Node with a value and empty next reference.
     fn new(value: u32) -> Node {
         Self {
-            value,
-            next: Rc::new(RefCell::new(None)),
+            value: Some(value),
+            next: None,
         }
     }
 
     /// Create a Node with a value and next reference.
-    fn new_with_next(value: u32, next_node: Rc<RefCell<Option<Node>>>) -> Node {
+    fn new_with_next(value: u32, next_node: Option<Rc<RefCell<Node>>>) -> Node {
         Self {
-            value,
+            value: Some(value),
             next: next_node,
         }
     }
 }
 
 pub struct Queue {
-    head: Rc<RefCell<Option<Node>>>,
-    tail: Rc<RefCell<Option<Node>>>,
+    head: Rc<RefCell<Node>>,
+    tail: Rc<RefCell<Node>>,
 }
 
 #[cfg(test)]
@@ -39,8 +39,15 @@ mod node_tests {
     #[test]
     fn initialize_single_node() {
         let node = Node::new(1);
-        assert_eq!(node.value, 1);
-        assert!(node.next.borrow().is_none());
+        assert!(node.value.is_some());
+        assert_eq!(node.value.unwrap(), 1);
+        assert!(node.next.is_none());
+
+        let sophisticated_node = Rc::new(RefCell::new(Node::new(2)));
+        let sophisticated_node_ref = sophisticated_node.borrow();
+        assert!(sophisticated_node_ref.value.is_some());
+        assert_eq!(sophisticated_node_ref.value.unwrap(), 2);
+        assert!(sophisticated_node_ref.next.is_none());
     }
 
     #[test]
@@ -106,7 +113,8 @@ mod node_tests {
     #[test]
     fn primitive_node() {
         let integer_node = Node::new(1);
-        assert_eq!(integer_node.value, 1);
+        assert!(integer_node.value.is_some());
+        assert_eq!(integer_node.value.unwrap(), 1);
 
         // let float_node = Node::new(0.1);
         // assert_eq!(float_node.value, 0.1);
