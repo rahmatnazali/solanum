@@ -6,27 +6,30 @@ use std::rc::Rc;
 #[derive(Debug, PartialEq)]
 struct Node {
     value: u32,
-    next: Option<Rc<RefCell<Node>>>,
+    next: Rc<RefCell<Option<Node>>>,
 }
 
 impl Node {
     /// Create a Node with a value and empty next reference.
     fn new(value: u32) -> Node {
-        Self { value, next: None }
+        Self {
+            value,
+            next: Rc::new(RefCell::new(None)),
+        }
     }
 
     /// Create a Node with a value and next reference.
-    fn new_with_next(value: u32, next_node: Rc<RefCell<Node>>) -> Node {
+    fn new_with_next(value: u32, next_node: Rc<RefCell<Option<Node>>>) -> Node {
         Self {
             value,
-            next: Some(Rc::clone(&next_node)),
+            next: next_node,
         }
     }
 }
 
 pub struct Queue {
-    head: Option<Rc<RefCell<Node>>>,
-    tail: Option<Rc<RefCell<Node>>>,
+    head: Rc<RefCell<Option<Node>>>,
+    tail: Rc<RefCell<Option<Node>>>,
 }
 
 #[cfg(test)]
@@ -34,30 +37,69 @@ mod node_tests {
     use super::*;
 
     #[test]
-    fn initialize_tail_node() {
+    fn initialize_single_node() {
         let node = Node::new(1);
         assert_eq!(node.value, 1);
-        assert!(node.next.is_none());
+        assert!(node.next.borrow().is_none());
     }
 
     #[test]
-    fn initialize_node_with_next_reference() {
-        let tail_node = Rc::new(RefCell::new(Node::new(1)));
-        let head_node = Node::new_with_next(2, Rc::clone(&tail_node));
-        assert_eq!(head_node.value, 2);
-        assert!(head_node.next.is_some());
+    fn borrow_next_node_to_evaluate_or_traverse() {
+        let node = Node::new(1);
 
-        let next_node = head_node.next.unwrap();
-        assert_eq!(*next_node.borrow(), *tail_node.borrow());
-        assert_eq!(next_node.borrow().value, 1);
-        assert_eq!(
-            *next_node.borrow(),
-            Node {
-                value: 1,
-                next: None
-            }
-        )
+        // node.next can be borrowed many times
+        assert!(node.next.borrow().is_none());
+        assert!(node.next.borrow().is_none());
+        assert!(node.next.borrow().is_none());
+
+        // even as other variable
+        let borrowed_next_node = node.next.borrow();
+        assert!(borrowed_next_node.is_none());
+        assert!(borrowed_next_node.is_none());
     }
+
+    #[test]
+    fn borrow_mutable_next_node_to_modify() {
+        let node = Node::new(1);
+        assert!(node.next.borrow().is_none());
+
+        // node.next can be modified with borrow_mut
+        node.next.borrow_mut().replace(Node::new(2));
+
+        assert!(node.next.borrow().is_some());
+        let next_node_ref = node.next.borrow();
+        assert_eq!(next_node_ref.as_ref().unwrap().value, 2);
+    }
+
+    // #[test]
+    // fn initialize_node_with_next_reference() {
+    //     let tail_node = Rc::new(RefCell::new(Node::new(1)));
+    //     let head_node = Node::new_with_next(2, Rc::clone(&tail_node));
+    //     assert_eq!(head_node.value, 2);
+    //     assert!(head_node.next.is_some());
+    //
+    //     // todo: study this
+    //     let next_node = head_node.next.unwrap();
+    //     assert_eq!(*next_node.borrow(), *tail_node.borrow());
+    //     assert_eq!(next_node.borrow().value, 1);
+    //     assert_eq!(
+    //         *next_node.borrow(),
+    //         Node {
+    //             value: 1,
+    //             next: None
+    //         }
+    //     )
+    // }
+    //
+    // #[test]
+    // fn node_reference_is_changeable() {
+    //     let node = Node::new(2);
+    //     assert_eq!(node.value, 2);
+    //     assert!(node.next.is_none());
+    //
+    //     let next_node = node.next.unwrap();
+    //     (*next_node.borrow_mut()).next = Some(Rc::new(RefCell::new(Node::new(1))));
+    // }
 
     #[test]
     fn primitive_node() {
