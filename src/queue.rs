@@ -86,15 +86,20 @@ mod node_tests {
         assert_eq!(next_node_ref.as_ref().unwrap().value, 2);
     }
 
-    // #[test]
-    // fn node_reference_is_changeable() {
-    //     let node = Node::new(2);
-    //     assert_eq!(node.value, 2);
-    //     assert!(node.next.is_none());
-    //
-    //     let next_node = node.next.unwrap();
-    //     (*next_node.borrow_mut()).next = Some(Rc::new(RefCell::new(Node::new(1))));
-    // }
+    #[test]
+    fn node_next_reference_is_removable() {
+        let tail_node = Rc::new(RefCell::new(Some(Node::new(1))));
+        let head_node = Rc::new(RefCell::new(Some(Node::new_with_next(2, tail_node))));
+
+        let mut head_node_ref = head_node.borrow_mut();
+        assert!(head_node_ref.as_ref().is_some());
+
+        // set head_node.next as None
+        head_node_ref.take();
+
+        // head_node.next is now None
+        assert!(head_node_ref.as_ref().is_none());
+    }
 
     #[test]
     fn primitive_node() {
