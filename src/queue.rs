@@ -10,6 +10,14 @@ struct Node {
 }
 
 impl Node {
+    /// Create an empty Node
+    fn empty() -> Node {
+        Self {
+            value: None,
+            next: None,
+        }
+    }
+
     /// Create a Node with a value and empty next reference.
     fn new(value: u32) -> Node {
         Self {
@@ -25,6 +33,11 @@ impl Node {
             next: next_node,
         }
     }
+
+    /// Indicate whether this Node doesn't contain any value
+    fn is_empty(&self) -> bool {
+        self.value.is_none()
+    }
 }
 
 pub struct Queue {
@@ -35,6 +48,20 @@ pub struct Queue {
 #[cfg(test)]
 mod node_tests {
     use super::*;
+
+    #[test]
+    fn initialize_empty_node() {
+        let node = Node::empty();
+        assert!(node.is_empty());
+        assert!(node.value.is_none());
+        assert!(node.next.is_none());
+
+        let sophisticated_node = Rc::new(RefCell::new(Node::empty()));
+        let sophisticated_node_ref = sophisticated_node.borrow();
+        assert!(sophisticated_node_ref.is_empty());
+        assert!(sophisticated_node_ref.value.is_none());
+        assert!(sophisticated_node_ref.next.is_none());
+    }
 
     #[test]
     fn initialize_single_node() {
