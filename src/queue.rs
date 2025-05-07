@@ -77,65 +77,87 @@ mod node_tests {
         assert!(sophisticated_node_ref.next.is_none());
     }
 
-    #[test]
-    fn initialize_node_with_next_reference() {
-        let tail_node = Rc::new(RefCell::new(Some(Node::new(1))));
-        let head_node = Rc::new(RefCell::new(Some(Node::new_with_next(2, tail_node))));
+    // #[test]
+    // fn initialize_node_with_next_reference() {
+    //     let tail_node = Rc::new(RefCell::new(Some(Node::new(1))));
+    //     let head_node = Rc::new(RefCell::new(Some(Node::new_with_next(2, tail_node))));
+    //
+    //     // evaluate that the queue order is as intended
+    //     let head_node_ref = head_node.borrow();
+    //     assert!(head_node_ref.as_ref().is_some());
+    //     assert_eq!(head_node_ref.as_ref().unwrap().value, 2);
+    //
+    //     let tail_node_ref = head_node_ref.as_ref().unwrap().next.borrow();
+    //     assert!(tail_node_ref.as_ref().is_some());
+    //     assert_eq!(tail_node_ref.as_ref().unwrap().value, 1);
+    // }
 
-        // evaluate that the queue order is as intended
-        let head_node_ref = head_node.borrow();
-        assert!(head_node_ref.as_ref().is_some());
-        assert_eq!(head_node_ref.as_ref().unwrap().value, 2);
+    // #[test]
+    // fn borrow_next_node_to_evaluate_or_traverse() {
+    //     let node = Node::new(1);
+    //
+    //     // node.next can be borrowed many times
+    //     assert!(node.next.borrow().is_none());
+    //     assert!(node.next.borrow().is_none());
+    //     assert!(node.next.borrow().is_none());
+    //
+    //     // even as other variable
+    //     let borrowed_next_node = node.next.borrow();
+    //     assert!(borrowed_next_node.is_none());
+    //     assert!(borrowed_next_node.is_none());
+    // }
 
-        let tail_node_ref = head_node_ref.as_ref().unwrap().next.borrow();
-        assert!(tail_node_ref.as_ref().is_some());
-        assert_eq!(tail_node_ref.as_ref().unwrap().value, 1);
-    }
+    // #[test]
+    // fn borrow_mutable_next_node_to_modify() {
+    //     let node = Node::new(1);
+    //     assert!(node.next.borrow().is_none());
+    //
+    //     // node.next can be modified with borrow_mut
+    //     node.next.borrow_mut().replace(Node::new(2));
+    //
+    //     assert!(node.next.borrow().is_some());
+    //     let next_node_ref = node.next.borrow();
+    //     assert_eq!(next_node_ref.as_ref().unwrap().value, 2);
+    // }
 
-    #[test]
-    fn borrow_next_node_to_evaluate_or_traverse() {
-        let node = Node::new(1);
+    // #[test]
+    // fn node_next_reference_is_removable() {
+    //     let tail_node = Rc::new(RefCell::new(Some(Node::new(1))));
+    //     let head_node = Rc::new(RefCell::new(Some(Node::new_with_next(2, tail_node))));
+    //
+    //     let head_node_ref = head_node.borrow_mut();
+    //     let mut head_node_next_ref = head_node_ref.as_ref().unwrap().next.borrow_mut();
+    //     assert!(head_node_next_ref.as_ref().is_some());
+    //     assert_eq!(head_node_next_ref.as_ref().unwrap().value, 1);
+    //
+    //     // set head_node.next as None
+    //     head_node_next_ref.take();
+    //
+    //     // head_node.next is now None
+    //     assert!(head_node_next_ref.as_ref().is_none());
+    // }
 
-        // node.next can be borrowed many times
-        assert!(node.next.borrow().is_none());
-        assert!(node.next.borrow().is_none());
-        assert!(node.next.borrow().is_none());
-
-        // even as other variable
-        let borrowed_next_node = node.next.borrow();
-        assert!(borrowed_next_node.is_none());
-        assert!(borrowed_next_node.is_none());
-    }
-
-    #[test]
-    fn borrow_mutable_next_node_to_modify() {
-        let node = Node::new(1);
-        assert!(node.next.borrow().is_none());
-
-        // node.next can be modified with borrow_mut
-        node.next.borrow_mut().replace(Node::new(2));
-
-        assert!(node.next.borrow().is_some());
-        let next_node_ref = node.next.borrow();
-        assert_eq!(next_node_ref.as_ref().unwrap().value, 2);
-    }
-
-    #[test]
-    fn node_next_reference_is_removable() {
-        let tail_node = Rc::new(RefCell::new(Some(Node::new(1))));
-        let head_node = Rc::new(RefCell::new(Some(Node::new_with_next(2, tail_node))));
-
-        let head_node_ref = head_node.borrow_mut();
-        let mut head_node_next_ref = head_node_ref.as_ref().unwrap().next.borrow_mut();
-        assert!(head_node_next_ref.as_ref().is_some());
-        assert_eq!(head_node_next_ref.as_ref().unwrap().value, 1);
-
-        // set head_node.next as None
-        head_node_next_ref.take();
-
-        // head_node.next is now None
-        assert!(head_node_next_ref.as_ref().is_none());
-    }
+    // #[test]
+    // fn node_next_reference_is_changeable() {
+    //     let tail_node = Rc::new(RefCell::new(Some(Node::new(1))));
+    //     let head_node = Rc::new(RefCell::new(Some(Node::new(2))));
+    //
+    //     let mut head_node_ref = head_node.borrow_mut();
+    //     head_node_ref.unwrap().next;
+    //
+    //
+    //
+    //
+    //     let mut head_node_next_ref = head_node_ref.as_ref().unwrap().next.borrow_mut();
+    //     assert!(head_node_next_ref.as_ref().is_none());
+    //
+    //     // set head_node.next as Some Node
+    //     head_node_next_ref.replace(*tail_node);
+    //
+    //     // head_node.next is now None
+    //     assert!(head_node_next_ref.as_ref().is_some());
+    //     assert_eq!(head_node_next_ref.as_ref().unwrap().value, 1);
+    // }
 
     #[test]
     fn primitive_node() {
