@@ -96,20 +96,21 @@ mod node_tests {
         assert!(tail_node_ref.next.is_none());
     }
 
-    // #[test]
-    // fn borrow_next_node_to_evaluate_or_traverse() {
-    //     let node = Node::new(1);
-    //
-    //     // node.next can be borrowed many times
-    //     assert!(node.next.borrow().is_none());
-    //     assert!(node.next.borrow().is_none());
-    //     assert!(node.next.borrow().is_none());
-    //
-    //     // even as other variable
-    //     let borrowed_next_node = node.next.borrow();
-    //     assert!(borrowed_next_node.is_none());
-    //     assert!(borrowed_next_node.is_none());
-    // }
+    #[test]
+    fn borrow_next_node_to_evaluate_or_traverse() {
+        let node = Rc::new(RefCell::new(Node::new(1)));
+
+        // node.next can be borrowed many times
+        assert!(node.borrow().next.is_none());
+        assert!(node.borrow().next.is_none());
+        assert!(node.borrow().next.is_none());
+
+        // even as other variable
+        let borrowed_next_node = node.borrow();
+        assert!(borrowed_next_node.next.is_none());
+        assert!(borrowed_next_node.next.is_none());
+        assert!(borrowed_next_node.next.is_none());
+    }
 
     // #[test]
     // fn borrow_mutable_next_node_to_modify() {
