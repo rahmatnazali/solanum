@@ -77,20 +77,24 @@ mod node_tests {
         assert!(sophisticated_node_ref.next.is_none());
     }
 
-    // #[test]
-    // fn initialize_node_with_next_reference() {
-    //     let tail_node = Rc::new(RefCell::new(Some(Node::new(1))));
-    //     let head_node = Rc::new(RefCell::new(Some(Node::new_with_next(2, tail_node))));
-    //
-    //     // evaluate that the queue order is as intended
-    //     let head_node_ref = head_node.borrow();
-    //     assert!(head_node_ref.as_ref().is_some());
-    //     assert_eq!(head_node_ref.as_ref().unwrap().value, 2);
-    //
-    //     let tail_node_ref = head_node_ref.as_ref().unwrap().next.borrow();
-    //     assert!(tail_node_ref.as_ref().is_some());
-    //     assert_eq!(tail_node_ref.as_ref().unwrap().value, 1);
-    // }
+    #[test]
+    fn initialize_node_with_next_reference() {
+        let tail_node = Rc::new(RefCell::new(Node::new(1)));
+        let head_node = Rc::new(RefCell::new(Node::new_with_next(2, Some(tail_node))));
+
+        // evaluate that the queue order is as intended
+        let head_node_ref = head_node.borrow();
+        assert!(!head_node_ref.is_empty());
+        assert!(head_node_ref.next.is_some());
+        assert!(head_node_ref.value.is_some());
+        assert_eq!(head_node_ref.value.unwrap(), 2);
+
+        let tail_node_ref = head_node_ref.next.as_ref().unwrap().borrow();
+        assert!(!tail_node_ref.is_empty());
+        assert!(tail_node_ref.value.is_some());
+        assert_eq!(tail_node_ref.value.unwrap(), 1);
+        assert!(tail_node_ref.next.is_none());
+    }
 
     // #[test]
     // fn borrow_next_node_to_evaluate_or_traverse() {
