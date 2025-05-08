@@ -112,18 +112,21 @@ mod node_tests {
         assert!(borrowed_reference.next.is_none());
     }
 
-    // #[test]
-    // fn borrow_mutable_next_node_to_modify() {
-    //     let node = Node::new(1);
-    //     assert!(node.next.borrow().is_none());
-    //
-    //     // node.next can be modified with borrow_mut
-    //     node.next.borrow_mut().replace(Node::new(2));
-    //
-    //     assert!(node.next.borrow().is_some());
-    //     let next_node_ref = node.next.borrow();
-    //     assert_eq!(next_node_ref.as_ref().unwrap().value, 2);
-    // }
+    #[test]
+    fn borrow_mutable_next_node_to_modify() {
+        let node = Rc::new(RefCell::new(Node::new(1)));
+        assert!(node.borrow().next.is_none());
+
+        // node.next can be modified with borrow_mut
+        node.borrow_mut()
+            .next
+            .replace(Rc::new(RefCell::new(Node::new(2))));
+
+        assert!(node.borrow().next.is_some());
+        let node_ref = node.borrow();
+        let next_node_ref = node_ref.next.as_ref().unwrap().borrow();
+        assert_eq!(next_node_ref.value.as_ref().unwrap(), &2);
+    }
 
     // #[test]
     // fn node_next_reference_is_removable() {
