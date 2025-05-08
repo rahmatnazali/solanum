@@ -97,7 +97,7 @@ mod node_tests {
     }
 
     #[test]
-    fn borrow_next_node_to_evaluate_or_traverse() {
+    fn immutably_borrow_next_node_to_evaluate_or_traverse() {
         let node = Rc::new(RefCell::new(Node::new(1)));
 
         // node.next can be borrowed many times
@@ -113,7 +113,7 @@ mod node_tests {
     }
 
     #[test]
-    fn borrow_mutable_next_node_to_modify() {
+    fn mutably_borrow_next_node_to_modify() {
         let node = Rc::new(RefCell::new(Node::new(1)));
         assert!(node.borrow().next.is_none());
 
