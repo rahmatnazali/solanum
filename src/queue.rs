@@ -229,15 +229,16 @@ mod node_tests {
     //     let _point_node = Node::new(Point { x: 1, y: 2 });
     // }
 
-    // #[test]
-    // fn reference_count_in_node_next() {
-    //     let node_1 = Rc::new(Node::new(1));
-    //     let node_2 = Rc::new(Node::new_with_next(2, Rc::clone(&node_1)));
-    //
-    //     assert_eq!(Rc::strong_count(&node_1), 2); // node_1 & being referenced by node_2.next
-    //     assert_eq!(Rc::strong_count(&node_2), 1); // node_2
-    // }
-    //
+    #[test]
+    fn reference_count_in_node_next() {
+        let tail_node = Rc::new(RefCell::new(Node::new(1)));
+        let tail_node_rc_ref = Rc::clone(&tail_node);
+        let head_node = Rc::new(RefCell::new(Node::new_with_next(2, Some(tail_node))));
+
+        assert_eq!(Rc::strong_count(&head_node), 1); // tail_node_rc_ref itself
+        assert_eq!(Rc::strong_count(&tail_node_rc_ref), 2); // tail_node_rc_ref & being referenced by head_node.next
+    }
+
     // #[test]
     // fn reference_count_is_reduced_after_unlink() {
     //     let node_1 = Rc::new(Node::new(1));
