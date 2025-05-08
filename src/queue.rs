@@ -165,27 +165,43 @@ mod node_tests {
         assert!(head_node_ref.next.is_none());
     }
 
-    // #[test]
-    // fn node_next_reference_is_changeable() {
-    //     let tail_node = Rc::new(RefCell::new(Some(Node::new(1))));
-    //     let head_node = Rc::new(RefCell::new(Some(Node::new(2))));
-    //
-    //     let mut head_node_ref = head_node.borrow_mut();
-    //     head_node_ref.unwrap().next;
-    //
-    //
-    //
-    //
-    //     let mut head_node_next_ref = head_node_ref.as_ref().unwrap().next.borrow_mut();
-    //     assert!(head_node_next_ref.as_ref().is_none());
-    //
-    //     // set head_node.next as Some Node
-    //     head_node_next_ref.replace(*tail_node);
-    //
-    //     // head_node.next is now None
-    //     assert!(head_node_next_ref.as_ref().is_some());
-    //     assert_eq!(head_node_next_ref.as_ref().unwrap().value, 1);
-    // }
+    #[test]
+    fn node_next_reference_is_changeable() {
+        let tail_node = Rc::new(RefCell::new(Node::new(1)));
+        let head_node = Rc::new(RefCell::new(Node::new(2)));
+
+        // each node is independent
+        assert!(head_node.borrow().next.is_none());
+        assert!(tail_node.borrow().next.is_none());
+
+        // head_node.next is linked to tail_node
+        let mut head_node_ref = head_node.borrow_mut();
+        head_node_ref.next.replace(tail_node);
+
+        // head_node.next is now tail_node
+        assert!(head_node_ref.next.is_some());
+        assert!(head_node_ref.next.as_ref().unwrap().borrow().next.is_none());
+        assert!(
+            head_node_ref
+                .next
+                .as_ref()
+                .unwrap()
+                .borrow()
+                .value
+                .is_some()
+        );
+        assert_eq!(
+            head_node_ref
+                .next
+                .as_ref()
+                .unwrap()
+                .borrow()
+                .value
+                .as_ref()
+                .unwrap(),
+            &1
+        );
+    }
 
     #[test]
     fn primitive_node() {
