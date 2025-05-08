@@ -106,10 +106,10 @@ mod node_tests {
         assert!(node.borrow().next.is_none());
 
         // even as other variable
-        let borrowed_next_node = node.borrow();
-        assert!(borrowed_next_node.next.is_none());
-        assert!(borrowed_next_node.next.is_none());
-        assert!(borrowed_next_node.next.is_none());
+        let borrowed_reference = node.borrow();
+        assert!(borrowed_reference.next.is_none());
+        assert!(borrowed_reference.next.is_none());
+        assert!(borrowed_reference.next.is_none());
     }
 
     // #[test]
