@@ -239,17 +239,19 @@ mod node_tests {
         assert_eq!(Rc::strong_count(&tail_node_rc_ref), 2); // tail_node_rc_ref & being referenced by head_node.next
     }
 
-    // #[test]
-    // fn reference_count_is_reduced_after_unlink() {
-    //     let node_1 = Rc::new(Node::new(1));
-    //     assert_eq!(Rc::strong_count(&node_1), 1); // node_1 itself
-    //
-    //     {
-    //         let _node_2 = Rc::new(Node::new_with_next(2, Rc::clone(&node_1)));
-    //         assert_eq!(Rc::strong_count(&node_1), 2); // node_1 & being referenced by node_2.next
-    //     }
-    //     // here, node_2 is dropped
-    //
-    //     assert_eq!(Rc::strong_count(&node_1), 1); // node_1 only, as node_2 has been dropped
-    // }
+    #[test]
+    fn reference_count_is_reduced_after_unlink() {
+        let node_1 = Rc::new(RefCell::new(Node::new(1)));
+        let node_1_ref = Rc::clone(&node_1);
+        assert_eq!(Rc::strong_count(&node_1), 2); // node_1 and node_1_ref
+        assert_eq!(Rc::strong_count(&node_1_ref), 2); // node_1 and node_1_ref
+
+        {
+            let _node_2 = Rc::new(Node::new_with_next(2, Some(node_1))); // move happens. node_1 now owned by node 2
+            assert_eq!(Rc::strong_count(&node_1_ref), 2); // node_1_ref, and being referenced by node_2.next
+        }
+        // here, node_2 is dropped
+
+        assert_eq!(Rc::strong_count(&node_1_ref), 1); // node_1_ref
+    }
 }
