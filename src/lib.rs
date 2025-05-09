@@ -2,6 +2,7 @@
 
 //! A collection of memory-safe linear data structure
 
+pub mod node;
 pub mod queue;
 pub mod stack;
 

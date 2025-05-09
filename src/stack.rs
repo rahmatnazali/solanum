@@ -1,29 +1,9 @@
 //! Implementation of mutable Stack with `push()` and `pop()`.
 
+use crate::node::ImmutableNode;
 use std::rc::Rc;
 
-#[derive(Debug, PartialEq)]
-struct Node<T> {
-    value: T,
-    next: Option<Rc<Node<T>>>,
-}
-
-impl<T> Node<T> {
-    /// Create a Node with a value and empty next reference.
-    fn new(value: T) -> Node<T> {
-        Self { value, next: None }
-    }
-
-    /// Create a Node with a value and next reference.
-    fn new_with_next(value: T, next_node: Rc<Node<T>>) -> Node<T> {
-        Self {
-            value,
-            next: Some(Rc::clone(&next_node)),
-        }
-    }
-}
-
-/// Implementation of a Stack
+/// Implementation of a Stack with [ImmutableNode]
 ///
 ///
 /// Examples:
@@ -42,7 +22,7 @@ impl<T> Node<T> {
 /// assert_eq!(stack.to_list(), vec![300, 100]);
 /// ```
 pub struct Stack<T> {
-    head: Option<Rc<Node<T>>>,
+    head: Option<Rc<ImmutableNode<T>>>,
 }
 
 impl<T: Clone> Stack<T> {
@@ -67,7 +47,7 @@ impl<T: Clone> Stack<T> {
     /// assert_eq!(stack.size(), 1);
     /// ```
     pub fn new(value: T) -> Stack<T> {
-        let node = Rc::new(Node::new(value));
+        let node = Rc::new(ImmutableNode::new(value));
         Self { head: Some(node) }
     }
 
@@ -146,10 +126,10 @@ impl<T: Clone> Stack<T> {
     /// ```
     pub fn push(&mut self, value: T) {
         if self.is_empty() {
-            self.head = Some(Rc::new(Node::new(value)));
+            self.head = Some(Rc::new(ImmutableNode::new(value)));
         } else {
             let head_node = self.head.take().unwrap();
-            self.head = Some(Rc::new(Node::new_with_next(value, head_node)));
+            self.head = Some(Rc::new(ImmutableNode::new_with_next(value, head_node)));
         }
     }
 
@@ -197,76 +177,6 @@ impl<T: Clone> Stack<T> {
             node_pointer = &node.next
         }
         list
-    }
-}
-
-#[cfg(test)]
-mod node_tests {
-    use super::*;
-
-    #[test]
-    fn initialize_tail_node() {
-        let node = Node::new(1);
-        assert_eq!(node.value, 1);
-        assert!(node.next.is_none());
-    }
-
-    #[test]
-    fn initialize_node_with_next_reference() {
-        let tail_node = Rc::new(Node::new(1));
-        let node = Node::new_with_next(2, Rc::clone(&tail_node));
-        assert_eq!(node.value, 2);
-        assert!(node.next.is_some());
-        assert_eq!(node.next.as_ref().unwrap().value, 1);
-        assert_eq!(node.next.unwrap(), tail_node);
-    }
-
-    #[test]
-    fn primitive_node() {
-        let integer_node = Node::new(1);
-        assert_eq!(integer_node.value, 1);
-
-        let float_node = Node::new(0.1);
-        assert_eq!(float_node.value, 0.1);
-
-        let boolean_node = Node::new(true);
-        assert!(boolean_node.value);
-
-        let str_node = Node::new("hello");
-        assert_eq!(str_node.value, "hello");
-    }
-
-    #[test]
-    fn complex_node() {
-        #[allow(dead_code)]
-        struct Point {
-            x: u32,
-            y: u32,
-        }
-        let _point_node = Node::new(Point { x: 1, y: 2 });
-    }
-
-    #[test]
-    fn reference_count_in_node_next() {
-        let node_1 = Rc::new(Node::new(1));
-        let node_2 = Rc::new(Node::new_with_next(2, Rc::clone(&node_1)));
-
-        assert_eq!(Rc::strong_count(&node_1), 2); // node_1 & being referenced by node_2.next
-        assert_eq!(Rc::strong_count(&node_2), 1); // node_2
-    }
-
-    #[test]
-    fn reference_count_is_reduced_after_unlink() {
-        let node_1 = Rc::new(Node::new(1));
-        assert_eq!(Rc::strong_count(&node_1), 1); // node_1 itself
-
-        {
-            let _node_2 = Rc::new(Node::new_with_next(2, Rc::clone(&node_1)));
-            assert_eq!(Rc::strong_count(&node_1), 2); // node_1 & being referenced by node_2.next
-        }
-        // here, node_2 is dropped
-
-        assert_eq!(Rc::strong_count(&node_1), 1); // node_1 only, as node_2 has been dropped
     }
 }
 
@@ -360,7 +270,7 @@ mod peek_tests {
 
     #[test]
     fn reference_on_peek_is_unchanged() {
-        let node = Rc::new(Node {
+        let node = Rc::new(ImmutableNode {
             value: 100,
             next: None,
         });
@@ -402,11 +312,11 @@ mod size_tests {
     #[test]
     fn size_of_filled_stack() {
         let stack = Stack {
-            head: Some(Rc::new(Node {
+            head: Some(Rc::new(ImmutableNode {
                 value: 100,
-                next: Some(Rc::new(Node {
+                next: Some(Rc::new(ImmutableNode {
                     value: 200,
-                    next: Some(Rc::new(Node {
+                    next: Some(Rc::new(ImmutableNode {
                         value: 300,
                         next: None,
                     })),
@@ -430,11 +340,11 @@ mod list_tests {
     #[test]
     fn list_filled_stack() {
         let stack = Stack {
-            head: Some(Rc::new(Node {
+            head: Some(Rc::new(ImmutableNode {
                 value: 1,
-                next: Some(Rc::new(Node {
+                next: Some(Rc::new(ImmutableNode {
                     value: 2,
-                    next: Some(Rc::new(Node {
+                    next: Some(Rc::new(ImmutableNode {
                         value: 3,
                         next: None,
                     })),
@@ -535,7 +445,7 @@ mod pop_tests {
 
     #[test]
     fn reference_on_pop() {
-        let node = Rc::new(Node {
+        let node = Rc::new(ImmutableNode {
             value: 100,
             next: None,
         });
