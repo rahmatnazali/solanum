@@ -2,4 +2,4 @@
 
 pub mod unidirectional;
 
-pub use unidirectional::ImmutableNode;
+pub use unidirectional::immutable_node::ImmutableNode;

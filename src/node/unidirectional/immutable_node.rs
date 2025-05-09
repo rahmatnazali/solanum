@@ -1,4 +1,4 @@
-//! Implementation of various unidirectional node
+//! Implementation of an immutable node
 
 use std::rc::Rc;
 
@@ -28,7 +28,7 @@ impl<T> ImmutableNode<T> {
 }
 
 #[cfg(test)]
-mod node_tests {
+mod tests {
     use super::*;
 
     #[test]
