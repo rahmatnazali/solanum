@@ -1,15 +1,16 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 
+/// Implementation of interior mutable node with [Rc] and [RefCell]
 #[derive(Debug, PartialEq)]
-pub struct Node {
+pub struct MutableNode {
     value: Option<u32>,
-    next: Option<Rc<RefCell<Node>>>,
+    next: Option<Rc<RefCell<MutableNode>>>,
 }
 
-impl Node {
+impl MutableNode {
     /// Create an empty Node
-    fn empty() -> Node {
+    fn empty() -> MutableNode {
         Self {
             value: None,
             next: None,
@@ -17,7 +18,7 @@ impl Node {
     }
 
     /// Create a Node with a value and empty next reference.
-    fn new(value: u32) -> Node {
+    fn new(value: u32) -> MutableNode {
         Self {
             value: Some(value),
             next: None,
@@ -25,7 +26,7 @@ impl Node {
     }
 
     /// Create a Node with a value and next reference.
-    fn new_with_next(value: u32, next_node: Option<Rc<RefCell<Node>>>) -> Node {
+    fn new_with_next(value: u32, next_node: Option<Rc<RefCell<MutableNode>>>) -> MutableNode {
         Self {
             value: Some(value),
             next: next_node,
@@ -44,12 +45,12 @@ mod tests {
 
     #[test]
     fn initialize_empty_node() {
-        let node = Node::empty();
+        let node = MutableNode::empty();
         assert!(node.is_empty());
         assert!(node.value.is_none());
         assert!(node.next.is_none());
 
-        let sophisticated_node = Rc::new(RefCell::new(Node::empty()));
+        let sophisticated_node = Rc::new(RefCell::new(MutableNode::empty()));
         let sophisticated_node_ref = sophisticated_node.borrow();
         assert!(sophisticated_node_ref.is_empty());
         assert!(sophisticated_node_ref.value.is_none());
@@ -58,12 +59,12 @@ mod tests {
 
     #[test]
     fn initialize_single_node() {
-        let node = Node::new(1);
+        let node = MutableNode::new(1);
         assert!(node.value.is_some());
         assert_eq!(node.value.unwrap(), 1);
         assert!(node.next.is_none());
 
-        let sophisticated_node = Rc::new(RefCell::new(Node::new(2)));
+        let sophisticated_node = Rc::new(RefCell::new(MutableNode::new(2)));
         let sophisticated_node_ref = sophisticated_node.borrow();
         assert!(sophisticated_node_ref.value.is_some());
         assert_eq!(sophisticated_node_ref.value.unwrap(), 2);
@@ -72,8 +73,8 @@ mod tests {
 
     #[test]
     fn initialize_node_with_next_reference() {
-        let tail_node = Rc::new(RefCell::new(Node::new(1)));
-        let head_node = Rc::new(RefCell::new(Node::new_with_next(2, Some(tail_node))));
+        let tail_node = Rc::new(RefCell::new(MutableNode::new(1)));
+        let head_node = Rc::new(RefCell::new(MutableNode::new_with_next(2, Some(tail_node))));
 
         // evaluate that the queue order is as intended
         let head_node_ref = head_node.borrow();
@@ -91,7 +92,7 @@ mod tests {
 
     #[test]
     fn immutably_borrow_next_node_to_evaluate_or_traverse() {
-        let node = Rc::new(RefCell::new(Node::new(1)));
+        let node = Rc::new(RefCell::new(MutableNode::new(1)));
 
         // node.next can be borrowed many times
         assert!(node.borrow().next.is_none());
@@ -107,13 +108,13 @@ mod tests {
 
     #[test]
     fn mutably_borrow_next_node_to_modify() {
-        let node = Rc::new(RefCell::new(Node::new(1)));
+        let node = Rc::new(RefCell::new(MutableNode::new(1)));
         assert!(node.borrow().next.is_none());
 
         // node.next can be modified with borrow_mut
         node.borrow_mut()
             .next
-            .replace(Rc::new(RefCell::new(Node::new(2))));
+            .replace(Rc::new(RefCell::new(MutableNode::new(2))));
 
         assert!(node.borrow().next.is_some());
         let node_ref = node.borrow();
@@ -123,8 +124,8 @@ mod tests {
 
     #[test]
     fn node_next_reference_is_removable() {
-        let tail_node = Rc::new(RefCell::new(Node::new(1)));
-        let head_node = Rc::new(RefCell::new(Node::new_with_next(2, Some(tail_node))));
+        let tail_node = Rc::new(RefCell::new(MutableNode::new(1)));
+        let head_node = Rc::new(RefCell::new(MutableNode::new_with_next(2, Some(tail_node))));
 
         let mut head_node_ref = head_node.borrow_mut();
         assert!(head_node_ref.next.is_some());
@@ -160,8 +161,8 @@ mod tests {
 
     #[test]
     fn node_next_reference_is_changeable() {
-        let tail_node = Rc::new(RefCell::new(Node::new(1)));
-        let head_node = Rc::new(RefCell::new(Node::new(2)));
+        let tail_node = Rc::new(RefCell::new(MutableNode::new(1)));
+        let head_node = Rc::new(RefCell::new(MutableNode::new(2)));
 
         // each node is independent
         assert!(head_node.borrow().next.is_none());
@@ -198,7 +199,7 @@ mod tests {
 
     #[test]
     fn primitive_node() {
-        let integer_node = Node::new(1);
+        let integer_node = MutableNode::new(1);
         assert!(integer_node.value.is_some());
         assert_eq!(integer_node.value.unwrap(), 1);
 
@@ -224,9 +225,9 @@ mod tests {
 
     #[test]
     fn reference_count_in_node_next() {
-        let tail_node = Rc::new(RefCell::new(Node::new(1)));
+        let tail_node = Rc::new(RefCell::new(MutableNode::new(1)));
         let tail_node_rc_ref = Rc::clone(&tail_node);
-        let head_node = Rc::new(RefCell::new(Node::new_with_next(2, Some(tail_node))));
+        let head_node = Rc::new(RefCell::new(MutableNode::new_with_next(2, Some(tail_node))));
 
         assert_eq!(Rc::strong_count(&head_node), 1); // tail_node_rc_ref itself
         assert_eq!(Rc::strong_count(&tail_node_rc_ref), 2); // tail_node_rc_ref & being referenced by head_node.next
@@ -234,13 +235,13 @@ mod tests {
 
     #[test]
     fn reference_count_is_reduced_after_unlink() {
-        let node_1 = Rc::new(RefCell::new(Node::new(1)));
+        let node_1 = Rc::new(RefCell::new(MutableNode::new(1)));
         let node_1_ref = Rc::clone(&node_1);
         assert_eq!(Rc::strong_count(&node_1), 2); // node_1 and node_1_ref
         assert_eq!(Rc::strong_count(&node_1_ref), 2); // node_1 and node_1_ref
 
         {
-            let _node_2 = Rc::new(Node::new_with_next(2, Some(node_1))); // move happens. node_1 now owned by node 2
+            let _node_2 = Rc::new(MutableNode::new_with_next(2, Some(node_1))); // move happens. node_1 now owned by node 2
             assert_eq!(Rc::strong_count(&node_1_ref), 2); // node_1_ref, and being referenced by node_2.next
         }
         // here, node_2 is dropped
