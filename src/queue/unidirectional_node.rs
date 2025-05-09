@@ -1,10 +1,8 @@
-//! Implementation of mutable Queue with `enqueue()` and `dequeue()`.
-
 use std::cell::RefCell;
 use std::rc::Rc;
 
 #[derive(Debug, PartialEq)]
-struct Node {
+pub struct Node {
     value: Option<u32>,
     next: Option<Rc<RefCell<Node>>>,
 }
@@ -40,13 +38,8 @@ impl Node {
     }
 }
 
-pub struct Queue {
-    head: Rc<RefCell<Node>>,
-    tail: Rc<RefCell<Node>>,
-}
-
 #[cfg(test)]
-mod node_tests {
+mod tests {
     use super::*;
 
     #[test]
